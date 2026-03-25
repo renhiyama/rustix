@@ -49,7 +49,7 @@ mod openat2;
 #[cfg(linux_kernel)]
 mod raw_dir;
 mod seek_from;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 mod sendfile;
 #[cfg(not(any(target_os = "espidf", target_os = "redox")))]
 mod special;
@@ -113,7 +113,7 @@ pub use openat2::openat2;
 #[cfg(linux_kernel)]
 pub use raw_dir::{RawDir, RawDirEntry};
 pub use seek_from::SeekFrom;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub use sendfile::sendfile;
 #[cfg(not(any(target_os = "espidf", target_os = "redox")))]
 pub use special::*;

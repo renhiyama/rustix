@@ -3,7 +3,7 @@ use crate::backend;
     linux_raw,
     any(
         all(target_os = "android", target_pointer_width = "64"),
-        target_os = "linux",
+        any(target_os = "linux", target_os = "runixos"),
     )
 ))]
 use crate::ffi::CStr;
@@ -59,7 +59,7 @@ pub fn clock_ticks_per_second() -> u64 {
     linux_raw,
     any(
         all(target_os = "android", target_pointer_width = "64"),
-        target_os = "linux",
+        any(target_os = "linux", target_os = "runixos"),
     )
 ))]
 #[inline]
@@ -80,7 +80,7 @@ pub fn linux_hwcap() -> (usize, usize) {
     linux_raw,
     any(
         all(target_os = "android", target_pointer_width = "64"),
-        target_os = "linux",
+        any(target_os = "linux", target_os = "runixos"),
     )
 ))]
 #[inline]
@@ -101,7 +101,7 @@ pub fn linux_minsigstksz() -> usize {
     linux_raw,
     any(
         all(target_os = "android", target_pointer_width = "64"),
-        target_os = "linux",
+        any(target_os = "linux", target_os = "runixos"),
     )
 ))]
 #[inline]

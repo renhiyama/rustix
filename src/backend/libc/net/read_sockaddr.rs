@@ -11,7 +11,7 @@ use crate::io::Errno;
 use crate::net::addr::SocketAddrLen;
 #[cfg(linux_kernel)]
 use crate::net::netlink::SocketAddrNetlink;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::net::xdp::{SocketAddrXdp, SocketAddrXdpFlags};
 use crate::net::{AddressFamily, Ipv4Addr, Ipv6Addr, SocketAddrAny, SocketAddrV4, SocketAddrV6};
 use core::mem::size_of;
@@ -233,7 +233,7 @@ pub(crate) fn read_sockaddr_unix(addr: &SocketAddrAny) -> Result<SocketAddrUnix,
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn read_sockaddr_xdp(addr: &SocketAddrAny) -> Result<SocketAddrXdp, Errno> {
     if addr.address_family() != AddressFamily::XDP {

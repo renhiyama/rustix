@@ -143,9 +143,9 @@
 #![doc(alias = "getsockopt")]
 #![doc(alias = "setsockopt")]
 
-#[cfg(all(target_os = "linux", feature = "time"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), feature = "time"))]
 use crate::clockid::ClockId;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::net::xdp::{XdpMmapOffsets, XdpOptionsFlags, XdpStatistics, XdpUmemReg};
 #[cfg(not(any(
     apple,
@@ -174,7 +174,7 @@ use crate::net::Protocol;
 use crate::net::SocketAddrV4;
 #[cfg(linux_kernel)]
 use crate::net::SocketAddrV6;
-#[cfg(all(target_os = "linux", feature = "time"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), feature = "time"))]
 use crate::net::TxTimeFlags;
 use crate::net::{Ipv4Addr, Ipv6Addr, SocketType};
 use crate::{backend, io};
@@ -695,7 +695,7 @@ pub fn socket_protocol<Fd: AsFd>(fd: Fd) -> io::Result<Option<Protocol>> {
 /// See the [module-level documentation] for more.
 ///
 /// [module-level documentation]: self#references-for-get_socket_-and-set_socket_-functions
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 #[doc(alias = "SO_COOKIE")]
 pub fn socket_cookie<Fd: AsFd>(fd: Fd) -> io::Result<u64> {
@@ -707,7 +707,7 @@ pub fn socket_cookie<Fd: AsFd>(fd: Fd) -> io::Result<u64> {
 /// See the [module-level documentation] for more.
 ///
 /// [module-level documentation]: self#references-for-get_socket_-and-set_socket_-functions
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 #[doc(alias = "SO_INCOMING_CPU")]
 pub fn socket_incoming_cpu<Fd: AsFd>(fd: Fd) -> io::Result<u32> {
@@ -719,7 +719,7 @@ pub fn socket_incoming_cpu<Fd: AsFd>(fd: Fd) -> io::Result<u32> {
 /// See the [module-level documentation] for more.
 ///
 /// [module-level documentation]: self#references-for-get_socket_-and-set_socket_-functions
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 #[doc(alias = "SO_INCOMING_CPU")]
 pub fn set_socket_incoming_cpu<Fd: AsFd>(fd: Fd, value: u32) -> io::Result<()> {
@@ -1693,14 +1693,14 @@ pub fn socket_peercred<Fd: AsFd>(fd: Fd) -> io::Result<super::UCred> {
 }
 
 /// `getsockopt(fd, SOL_SOCKET, SO_TXTIME)` — Get transmission timing configuration.
-#[cfg(all(target_os = "linux", feature = "time"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), feature = "time"))]
 #[doc(alias = "SO_TXTIME")]
 pub fn get_txtime<Fd: AsFd>(fd: Fd) -> io::Result<(ClockId, TxTimeFlags)> {
     backend::net::sockopt::get_txtime(fd.as_fd())
 }
 
 /// `setsockopt(fd, SOL_SOCKET, SO_TXTIME)` — Configure transmission timing.
-#[cfg(all(target_os = "linux", feature = "time"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), feature = "time"))]
 #[doc(alias = "SO_TXTIME")]
 pub fn set_txtime<Fd: AsFd>(fd: Fd, clockid: ClockId, flags: TxTimeFlags) -> io::Result<()> {
     backend::net::sockopt::set_txtime(fd.as_fd(), clockid, flags)
@@ -1714,7 +1714,7 @@ pub fn set_txtime<Fd: AsFd>(fd: Fd, clockid: ClockId, flags: TxTimeFlags) -> io:
 ///   - [Linux]
 ///
 /// [Linux]: https://www.kernel.org/doc/html/next/networking/af_xdp.html#xdp-umem-reg-setsockopt
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[doc(alias = "XDP_UMEM_REG")]
 pub fn set_xdp_umem_reg<Fd: AsFd>(fd: Fd, value: XdpUmemReg) -> io::Result<()> {
     backend::net::sockopt::set_xdp_umem_reg(fd.as_fd(), value)
@@ -1726,7 +1726,7 @@ pub fn set_xdp_umem_reg<Fd: AsFd>(fd: Fd, value: XdpUmemReg) -> io::Result<()> {
 ///   - [Linux]
 ///
 /// [Linux]: https://www.kernel.org/doc/html/next/networking/af_xdp.html#xdp-rx-tx-umem-fill-umem-completion-ring-setsockopts
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[doc(alias = "XDP_UMEM_FILL_RING")]
 pub fn set_xdp_umem_fill_ring_size<Fd: AsFd>(fd: Fd, value: u32) -> io::Result<()> {
     backend::net::sockopt::set_xdp_umem_fill_ring_size(fd.as_fd(), value)
@@ -1738,7 +1738,7 @@ pub fn set_xdp_umem_fill_ring_size<Fd: AsFd>(fd: Fd, value: u32) -> io::Result<(
 ///   - [Linux]
 ///
 /// [Linux]: https://www.kernel.org/doc/html/next/networking/af_xdp.html#xdp-rx-tx-umem-fill-umem-completion-ring-setsockopts
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[doc(alias = "XDP_UMEM_COMPLETION_RING")]
 pub fn set_xdp_umem_completion_ring_size<Fd: AsFd>(fd: Fd, value: u32) -> io::Result<()> {
     backend::net::sockopt::set_xdp_umem_completion_ring_size(fd.as_fd(), value)
@@ -1750,7 +1750,7 @@ pub fn set_xdp_umem_completion_ring_size<Fd: AsFd>(fd: Fd, value: u32) -> io::Re
 ///   - [Linux]
 ///
 /// [Linux]: https://www.kernel.org/doc/html/next/networking/af_xdp.html#xdp-rx-tx-umem-fill-umem-completion-ring-setsockopts
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[doc(alias = "XDP_TX_RING")]
 pub fn set_xdp_tx_ring_size<Fd: AsFd>(fd: Fd, value: u32) -> io::Result<()> {
     backend::net::sockopt::set_xdp_tx_ring_size(fd.as_fd(), value)
@@ -1762,7 +1762,7 @@ pub fn set_xdp_tx_ring_size<Fd: AsFd>(fd: Fd, value: u32) -> io::Result<()> {
 ///   - [Linux]
 ///
 /// [Linux]: https://www.kernel.org/doc/html/next/networking/af_xdp.html#xdp-rx-tx-umem-fill-umem-completion-ring-setsockopts
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[doc(alias = "XDP_RX_RING")]
 pub fn set_xdp_rx_ring_size<Fd: AsFd>(fd: Fd, value: u32) -> io::Result<()> {
     backend::net::sockopt::set_xdp_rx_ring_size(fd.as_fd(), value)
@@ -1774,7 +1774,7 @@ pub fn set_xdp_rx_ring_size<Fd: AsFd>(fd: Fd, value: u32) -> io::Result<()> {
 ///   - [Linux]
 ///
 /// [Linux]: https://www.kernel.org/doc/html/next/networking/af_xdp.html
-#[cfg(all(linux_raw_dep, target_os = "linux"))]
+#[cfg(all(linux_raw_dep, any(target_os = "linux", target_os = "runixos")))]
 #[doc(alias = "XDP_MMAP_OFFSETS")]
 pub fn xdp_mmap_offsets<Fd: AsFd>(fd: Fd) -> io::Result<XdpMmapOffsets> {
     backend::net::sockopt::xdp_mmap_offsets(fd.as_fd())
@@ -1786,7 +1786,7 @@ pub fn xdp_mmap_offsets<Fd: AsFd>(fd: Fd) -> io::Result<XdpMmapOffsets> {
 ///   - [Linux]
 ///
 /// [Linux]: https://www.kernel.org/doc/html/next/networking/af_xdp.html#xdp-statistics-getsockopt
-#[cfg(all(linux_raw_dep, target_os = "linux"))]
+#[cfg(all(linux_raw_dep, any(target_os = "linux", target_os = "runixos")))]
 #[doc(alias = "XDP_STATISTICS")]
 pub fn xdp_statistics<Fd: AsFd>(fd: Fd) -> io::Result<XdpStatistics> {
     backend::net::sockopt::xdp_statistics(fd.as_fd())
@@ -1798,7 +1798,7 @@ pub fn xdp_statistics<Fd: AsFd>(fd: Fd) -> io::Result<XdpStatistics> {
 ///   - [Linux]
 ///
 /// [Linux]: https://www.kernel.org/doc/html/next/networking/af_xdp.html#xdp-options-getsockopt
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[doc(alias = "XDP_OPTIONS")]
 pub fn xdp_options<Fd: AsFd>(fd: Fd) -> io::Result<XdpOptionsFlags> {
     backend::net::sockopt::xdp_options(fd.as_fd())

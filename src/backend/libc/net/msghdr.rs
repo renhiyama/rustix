@@ -18,7 +18,7 @@ use core::mem::zeroed;
         target_os = "android",
         target_os = "redox",
         all(
-            target_os = "linux",
+            any(target_os = "linux", target_os = "runixos"),
             not(target_env = "musl"),
             not(all(target_env = "uclibc", any(target_arch = "arm", target_arch = "mips")))
         )
@@ -36,7 +36,7 @@ fn msg_iov_len(len: usize) -> c::size_t {
         target_os = "android",
         target_os = "redox",
         all(
-            target_os = "linux",
+            any(target_os = "linux", target_os = "runixos"),
             not(target_env = "musl"),
             not(all(target_env = "uclibc", any(target_arch = "arm", target_arch = "mips")))
         )

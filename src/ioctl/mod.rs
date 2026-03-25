@@ -295,7 +295,7 @@ type _Opcode = c::c_uint;
 // On libc Linux with GNU libc or uclibc, this is an `unsigned long`.
 #[cfg(all(
     not(linux_raw),
-    target_os = "linux",
+    any(target_os = "linux", target_os = "runixos"),
     any(target_env = "gnu", target_env = "uclibc")
 ))]
 type _Opcode = c::c_ulong;
@@ -303,7 +303,7 @@ type _Opcode = c::c_ulong;
 // Musl uses `c_int`.
 #[cfg(all(
     not(linux_raw),
-    target_os = "linux",
+    any(target_os = "linux", target_os = "runixos"),
     not(target_env = "gnu"),
     not(target_env = "uclibc")
 ))]

@@ -2,7 +2,7 @@
 
 #![allow(unsafe_code)]
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::backend::net::msghdr::noaddr_msghdr;
 use crate::backend::{self, c};
 use crate::fd::{AsFd, BorrowedFd, OwnedFd};
@@ -152,7 +152,7 @@ pub enum SendAncillaryMessage<'slice, 'fd> {
     /// whichever clock was configured on the socket with [`set_txtime`].
     ///
     /// [`set_txtime`]: crate::net::sockopt::set_txtime
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "runixos"))]
     #[doc(alias = "SCM_TXTIME")]
     TxTime(u64),
 }
@@ -167,7 +167,7 @@ impl SendAncillaryMessage<'_, '_> {
             Self::ScmRights(slice) => cmsg_space!(ScmRights(slice.len())),
             #[cfg(linux_kernel)]
             Self::ScmCredentials(_) => cmsg_space!(ScmCredentials(1)),
-            #[cfg(target_os = "linux")]
+            #[cfg(any(target_os = "linux", target_os = "runixos"))]
             Self::TxTime(_) => cmsg_space!(TxTime(1)),
         }
     }
@@ -310,7 +310,7 @@ impl<'buf, 'slice, 'fd> SendAncillaryBuffer<'buf, 'slice, 'fd> {
                 };
                 self.push_ancillary(ucred_bytes, c::SOL_SOCKET as _, c::SCM_CREDENTIALS as _)
             }
-            #[cfg(target_os = "linux")]
+            #[cfg(any(target_os = "linux", target_os = "runixos"))]
             SendAncillaryMessage::TxTime(tx_time) => {
                 let tx_time_bytes = unsafe {
                     slice::from_raw_parts(addr_of!(tx_time).cast::<u8>(), size_of_val(&tx_time))
@@ -633,14 +633,14 @@ impl FusedIterator for AncillaryDrain<'_> {}
 
 /// An ABI-compatible wrapper for `mmsghdr`, for sending multiple messages with
 /// [sendmmsg].
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[repr(transparent)]
 pub struct MMsgHdr<'a> {
     raw: c::mmsghdr,
     _phantom: PhantomData<&'a mut ()>,
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 impl<'a> MMsgHdr<'a> {
     /// Constructs a new message with no destination address.
     pub fn new(iov: &'a [IoSlice<'_>], control: &'a mut SendAncillaryBuffer<'_, '_, '_>) -> Self {
@@ -756,7 +756,7 @@ pub fn sendmsg_addr<Fd: AsFd>(
 ///
 /// [Linux]: https://man7.org/linux/man-pages/man2/sendmmsg.2.html
 #[inline]
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub fn sendmmsg<Fd: AsFd>(
     socket: Fd,
     msgs: &mut [MMsgHdr<'_>],

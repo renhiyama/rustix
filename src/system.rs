@@ -3,7 +3,7 @@
 #![allow(unsafe_code)]
 
 use crate::backend;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::backend::c;
 use crate::ffi::CStr;
 #[cfg(not(any(target_os = "espidf", target_os = "emscripten", target_os = "vita")))]
@@ -191,7 +191,7 @@ pub fn setdomainname(name: &[u8]) -> io::Result<()> {
 }
 
 /// Reboot command for use with [`reboot`].
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[repr(i32)]
 #[non_exhaustive]
@@ -243,7 +243,7 @@ pub enum RebootCommand {
 ///  - [Linux]
 ///
 /// [Linux]: https://man7.org/linux/man-pages/man2/reboot.2.html
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub fn reboot(cmd: RebootCommand) -> io::Result<()> {
     backend::system::syscalls::reboot(cmd)
 }
