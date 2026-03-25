@@ -165,10 +165,10 @@ pub(super) use {lstat64 as lstat, stat64 as stat};
     target_os = "emscripten"
 ))]
 pub(super) use {pread64 as pread, pwrite64 as pwrite};
-#[cfg(any(target_os = "linux", target_os = "hurd", target_os = "emscripten"))]
+#[cfg(any(any(target_os = "linux", target_os = "runixos"), target_os = "hurd", target_os = "emscripten"))]
 pub(super) use {preadv64 as preadv, pwritev64 as pwritev};
 
-#[cfg(all(target_os = "linux", any(target_env = "gnu", target_env = "uclibc")))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), any(target_env = "gnu", target_env = "uclibc")))]
 pub(super) unsafe fn prlimit(
     pid: pid_t,
     resource: __rlimit_resource_t,
@@ -188,7 +188,7 @@ pub(super) unsafe fn prlimit(
     prlimit64(pid, resource, new_limit, old_limit)
 }
 
-#[cfg(all(target_os = "linux", target_env = "musl"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), target_env = "musl"))]
 pub(super) unsafe fn prlimit(
     pid: pid_t,
     resource: c_int,
@@ -317,7 +317,7 @@ mod readwrite_pv {
 pub(super) use readwrite_pv::{preadv, pwritev};
 
 // glibc added `preadv64v2` and `pwritev64v2` in version 2.26.
-#[cfg(all(target_os = "linux", target_env = "gnu"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), target_env = "gnu"))]
 mod readwrite_pv64v2 {
     use super::*;
 
@@ -399,14 +399,14 @@ mod readwrite_pv64v2 {
         }
     }
 }
-#[cfg(all(target_os = "linux", target_env = "gnu"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), target_env = "gnu"))]
 pub(super) use readwrite_pv64v2::{preadv64v2 as preadv2, pwritev64v2 as pwritev2};
 
 // On non-glibc, assume we don't have `pwritev2`/`preadv2` in libc and use
 // `c::syscall` instead.
 #[cfg(any(
     target_os = "android",
-    all(target_os = "linux", not(target_env = "gnu")),
+    all(any(target_os = "linux", target_os = "runixos"), not(target_env = "gnu")),
 ))]
 mod readwrite_pv64v2 {
     use super::*;
@@ -470,7 +470,7 @@ mod readwrite_pv64v2 {
 }
 #[cfg(any(
     target_os = "android",
-    all(target_os = "linux", not(target_env = "gnu")),
+    all(any(target_os = "linux", target_os = "runixos"), not(target_env = "gnu")),
 ))]
 pub(super) use readwrite_pv64v2::{preadv64v2 as preadv2, pwritev64v2 as pwritev2};
 

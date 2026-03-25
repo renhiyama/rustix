@@ -51,7 +51,7 @@ mod tests {
     use super::*;
     use crate::backend::c;
     // Rust's libc crate lacks statx for Non-glibc targets.
-    #[cfg(all(target_os = "linux", target_env = "gnu"))]
+    #[cfg(all(any(target_os = "linux", target_os = "runixos"), target_env = "gnu"))]
     use crate::fs::{Statx, StatxTimestamp};
 
     #[test]
@@ -305,7 +305,7 @@ mod tests {
         }
 
         // Rust's libc crate lacks statx for Non-glibc targets.
-        #[cfg(all(target_os = "linux", target_env = "gnu"))]
+        #[cfg(all(any(target_os = "linux", target_os = "runixos"), target_env = "gnu"))]
         {
             check_renamed_type!(StatxTimestamp, statx_timestamp);
             check_renamed_struct_field!(StatxTimestamp, statx_timestamp, tv_sec);

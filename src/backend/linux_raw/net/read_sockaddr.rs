@@ -6,7 +6,7 @@ use crate::backend::c;
 use crate::io::Errno;
 use crate::net::addr::SocketAddrLen;
 use crate::net::netlink::SocketAddrNetlink;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::net::xdp::{SocketAddrXdp, SocketAddrXdpFlags};
 use crate::net::{
     AddressFamily, Ipv4Addr, Ipv6Addr, SocketAddrAny, SocketAddrUnix, SocketAddrV4, SocketAddrV6,

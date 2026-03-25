@@ -9,7 +9,7 @@ use super::msghdr::{noaddr_msghdr, with_msghdr, with_recv_msghdr};
 use super::read_sockaddr::initialize_family_to_unspec;
 use super::send_recv::{RecvFlags, ReturnFlags, SendFlags};
 use crate::backend::c;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::backend::conv::slice_mut;
 use crate::backend::conv::{
     by_mut, by_ref, c_int, c_uint, pass_usize, ret, ret_owned_fd, ret_usize, size_of, slice,
@@ -19,7 +19,7 @@ use crate::backend::reg::raw_arg;
 use crate::fd::{BorrowedFd, OwnedFd};
 use crate::io::{self, IoSlice, IoSliceMut};
 use crate::net::addr::SocketAddrArg;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::net::MMsgHdr;
 use crate::net::{
     AddressFamily, Protocol, RecvAncillaryBuffer, RecvMsg, SendAncillaryBuffer, Shutdown,
@@ -336,7 +336,7 @@ pub(crate) fn sendmsg_addr(
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn sendmmsg(
     sockfd: BorrowedFd<'_>,

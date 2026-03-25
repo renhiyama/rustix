@@ -213,7 +213,7 @@ impl fmt::Debug for SocketAddrAny {
                     return addr.fmt(f);
                 }
             }
-            #[cfg(target_os = "linux")]
+            #[cfg(any(target_os = "linux", target_os = "runixos"))]
             AddressFamily::XDP => {
                 if let Ok(addr) = crate::net::xdp::SocketAddrXdp::try_from(self.clone()) {
                     return addr.fmt(f);

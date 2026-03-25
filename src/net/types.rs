@@ -755,7 +755,7 @@ impl AddressFamily {
     #[cfg(any(apple, linux_kernel, target_os = "emscripten", target_os = "fuchsia"))]
     pub const VSOCK: Self = Self(c::AF_VSOCK as _);
     /// `AF_XDP`
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "runixos"))]
     pub const XDP: Self = Self(c::AF_XDP as _);
 
     /// Constructs a `AddressFamily` from a raw integer.
@@ -1722,7 +1722,7 @@ bitflags! {
     }
 }
 
-#[cfg(all(target_os = "linux", feature = "time"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), feature = "time"))]
 bitflags! {
     /// Flags for use with [`set_txtime`].
     ///
@@ -1738,7 +1738,7 @@ bitflags! {
 }
 
 /// `AF_XDP` related types and constants.
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub mod xdp {
     use crate::backend::net::read_sockaddr::read_sockaddr_xdp;
     use crate::fd::{AsRawFd, BorrowedFd};
@@ -2050,7 +2050,7 @@ pub mod xdp {
         pub options: XdpDescOptions,
     }
 
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "runixos"))]
     bitflags! {
         /// `XDP_*` constants for use in [`XdpDesc`].
         ///
@@ -2106,7 +2106,7 @@ mod tests {
 
     #[test]
     fn test_sizes() {
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "runixos"))]
         use crate::backend::c;
         use crate::ffi::c_int;
         use crate::net::addr::SocketAddrStorage;
@@ -2137,11 +2137,11 @@ mod tests {
         #[cfg(linux_kernel)]
         assert_eq_size!(UCred, libc::ucred);
 
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "runixos"))]
         assert_eq_size!(super::xdp::XdpUmemReg, c::xdp_umem_reg);
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "runixos"))]
         assert_eq_size!(super::xdp::XdpOptions, c::xdp_options);
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "runixos"))]
         assert_eq_size!(super::xdp::XdpDesc, c::xdp_desc);
     }
 }

@@ -16,7 +16,7 @@ use crate::io;
 use crate::net::sockopt::Timeout;
 #[cfg(linux_kernel)]
 use crate::net::sockopt::{Ipv4PathMtuDiscovery, Ipv6PathMtuDiscovery};
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::net::xdp::{XdpMmapOffsets, XdpOptionsFlags, XdpRingOffset, XdpStatistics, XdpUmemReg};
 #[cfg(not(any(
     apple,
@@ -52,12 +52,12 @@ use crate::net::Protocol;
 use crate::net::RawProtocol;
 #[cfg(any(linux_kernel, target_os = "fuchsia"))]
 use crate::net::SocketAddrV4;
-#[cfg(all(target_os = "linux", feature = "time"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), feature = "time"))]
 use crate::net::TxTimeFlags;
 use crate::net::{Ipv4Addr, Ipv6Addr, SocketType};
 #[cfg(linux_kernel)]
 use crate::net::{SocketAddrV6, UCred};
-#[cfg(all(target_os = "linux", feature = "time"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), feature = "time"))]
 use crate::time::ClockId;
 use crate::utils::as_mut_ptr;
 #[cfg(feature = "alloc")]
@@ -82,7 +82,7 @@ use c::TCP_KEEPALIVE as TCP_KEEPIDLE;
 use c::TCP_KEEPIDLE;
 use core::mem::{size_of, MaybeUninit};
 use core::time::Duration;
-#[cfg(all(linux_raw_dep, target_os = "linux"))]
+#[cfg(all(linux_raw_dep, any(target_os = "linux", target_os = "runixos")))]
 use linux_raw_sys::xdp::{xdp_mmap_offsets, xdp_statistics, xdp_statistics_v1};
 
 #[inline]
@@ -456,19 +456,19 @@ pub(crate) fn socket_protocol(fd: BorrowedFd<'_>) -> io::Result<Option<Protocol>
         .map(|raw| RawProtocol::new(raw).map(Protocol::from_raw))
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn socket_cookie(fd: BorrowedFd<'_>) -> io::Result<u64> {
     getsockopt(fd, c::SOL_SOCKET, c::SO_COOKIE)
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn socket_incoming_cpu(fd: BorrowedFd<'_>) -> io::Result<u32> {
     getsockopt(fd, c::SOL_SOCKET, c::SO_INCOMING_CPU)
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn set_socket_incoming_cpu(fd: BorrowedFd<'_>, value: u32) -> io::Result<()> {
     setsockopt(fd, c::SOL_SOCKET, c::SO_INCOMING_CPU, value)
@@ -1094,7 +1094,7 @@ pub(crate) fn socket_peercred(fd: BorrowedFd<'_>) -> io::Result<UCred> {
     getsockopt(fd, c::SOL_SOCKET, c::SO_PEERCRED)
 }
 
-#[cfg(all(target_os = "linux", feature = "time"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), feature = "time"))]
 #[inline]
 pub(crate) fn set_txtime(
     fd: BorrowedFd<'_>,
@@ -1112,7 +1112,7 @@ pub(crate) fn set_txtime(
     )
 }
 
-#[cfg(all(target_os = "linux", feature = "time"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), feature = "time"))]
 #[inline]
 pub(crate) fn get_txtime(fd: BorrowedFd<'_>) -> io::Result<(ClockId, TxTimeFlags)> {
     let txtime: c::sock_txtime = getsockopt(fd, c::SOL_SOCKET, c::SO_TXTIME)?;
@@ -1123,37 +1123,37 @@ pub(crate) fn get_txtime(fd: BorrowedFd<'_>) -> io::Result<(ClockId, TxTimeFlags
     ))
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn set_xdp_umem_reg(fd: BorrowedFd<'_>, value: XdpUmemReg) -> io::Result<()> {
     setsockopt(fd, c::SOL_XDP, c::XDP_UMEM_REG, value)
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn set_xdp_umem_fill_ring_size(fd: BorrowedFd<'_>, value: u32) -> io::Result<()> {
     setsockopt(fd, c::SOL_XDP, c::XDP_UMEM_FILL_RING, value)
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn set_xdp_umem_completion_ring_size(fd: BorrowedFd<'_>, value: u32) -> io::Result<()> {
     setsockopt(fd, c::SOL_XDP, c::XDP_UMEM_COMPLETION_RING, value)
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn set_xdp_tx_ring_size(fd: BorrowedFd<'_>, value: u32) -> io::Result<()> {
     setsockopt(fd, c::SOL_XDP, c::XDP_TX_RING, value)
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn set_xdp_rx_ring_size(fd: BorrowedFd<'_>, value: u32) -> io::Result<()> {
     setsockopt(fd, c::SOL_XDP, c::XDP_RX_RING, value)
 }
 
-#[cfg(all(linux_raw_dep, target_os = "linux"))]
+#[cfg(all(linux_raw_dep, any(target_os = "linux", target_os = "runixos")))]
 #[inline]
 pub(crate) fn xdp_mmap_offsets(fd: BorrowedFd<'_>) -> io::Result<XdpMmapOffsets> {
     // The kernel will write `xdp_mmap_offsets` or `xdp_mmap_offsets_v1` to the
@@ -1240,7 +1240,7 @@ pub(crate) fn xdp_mmap_offsets(fd: BorrowedFd<'_>) -> io::Result<XdpMmapOffsets>
     }
 }
 
-#[cfg(all(linux_raw_dep, target_os = "linux"))]
+#[cfg(all(linux_raw_dep, any(target_os = "linux", target_os = "runixos")))]
 #[inline]
 pub(crate) fn xdp_statistics(fd: BorrowedFd<'_>) -> io::Result<XdpStatistics> {
     let mut optlen = size_of::<xdp_statistics>().try_into().unwrap();
@@ -1283,7 +1283,7 @@ pub(crate) fn xdp_statistics(fd: BorrowedFd<'_>) -> io::Result<XdpStatistics> {
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn xdp_options(fd: BorrowedFd<'_>) -> io::Result<XdpOptionsFlags> {
     getsockopt(fd, c::SOL_XDP, c::XDP_OPTIONS)

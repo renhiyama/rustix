@@ -49,11 +49,11 @@ extern "C" {
 
 #[cfg(target_os = "android")]
 const _SC_PAGESIZE: c::c_int = 39;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 const _SC_PAGESIZE: c::c_int = 30;
 #[cfg(target_os = "android")]
 const _SC_CLK_TCK: c::c_int = 6;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 const _SC_CLK_TCK: c::c_int = 2;
 
 #[cfg(feature = "param")]

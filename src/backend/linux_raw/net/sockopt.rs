@@ -7,16 +7,16 @@
 
 use crate::backend::c;
 use crate::backend::conv::{by_mut, c_uint, ret, socklen_t};
-#[cfg(all(target_os = "linux", feature = "time"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), feature = "time"))]
 use crate::clockid::ClockId;
 use crate::fd::BorrowedFd;
 #[cfg(feature = "alloc")]
 use crate::ffi::CStr;
 use crate::io;
 use crate::net::sockopt::{Ipv4PathMtuDiscovery, Ipv6PathMtuDiscovery, Timeout};
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::net::xdp::{XdpMmapOffsets, XdpOptionsFlags, XdpRingOffset, XdpStatistics, XdpUmemReg};
-#[cfg(all(target_os = "linux", feature = "time"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), feature = "time"))]
 use crate::net::TxTimeFlags;
 use crate::net::{
     AddressFamily, Ipv4Addr, Ipv6Addr, Protocol, RawProtocol, SocketAddrBuf, SocketAddrV4,
@@ -32,7 +32,7 @@ use linux_raw_sys::general::{__kernel_old_timeval, __kernel_sock_timeval};
 use linux_raw_sys::net::{
     IPV6_MTU, IPV6_MTU_DISCOVER, IPV6_MULTICAST_IF, IP_MTU, IP_MTU_DISCOVER, IP_MULTICAST_IF,
 };
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use linux_raw_sys::xdp::{xdp_mmap_offsets, xdp_statistics, xdp_statistics_v1};
 #[cfg(target_arch = "x86")]
 use {
@@ -880,7 +880,7 @@ pub(crate) fn socket_peercred(fd: BorrowedFd<'_>) -> io::Result<UCred> {
     getsockopt(fd, c::SOL_SOCKET, linux_raw_sys::net::SO_PEERCRED)
 }
 
-#[cfg(all(target_os = "linux", feature = "time"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), feature = "time"))]
 #[inline]
 pub(crate) fn set_txtime(
     fd: BorrowedFd<'_>,
@@ -898,7 +898,7 @@ pub(crate) fn set_txtime(
     )
 }
 
-#[cfg(all(target_os = "linux", feature = "time"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), feature = "time"))]
 #[inline]
 pub(crate) fn get_txtime(fd: BorrowedFd<'_>) -> io::Result<(ClockId, TxTimeFlags)> {
     let txtime: c::sock_txtime = getsockopt(fd, c::SOL_SOCKET, c::SO_TXTIME)?;
@@ -909,37 +909,37 @@ pub(crate) fn get_txtime(fd: BorrowedFd<'_>) -> io::Result<(ClockId, TxTimeFlags
     ))
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn set_xdp_umem_reg(fd: BorrowedFd<'_>, value: XdpUmemReg) -> io::Result<()> {
     setsockopt(fd, c::SOL_XDP, c::XDP_UMEM_REG, value)
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn set_xdp_umem_fill_ring_size(fd: BorrowedFd<'_>, value: u32) -> io::Result<()> {
     setsockopt(fd, c::SOL_XDP, c::XDP_UMEM_FILL_RING, value)
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn set_xdp_umem_completion_ring_size(fd: BorrowedFd<'_>, value: u32) -> io::Result<()> {
     setsockopt(fd, c::SOL_XDP, c::XDP_UMEM_COMPLETION_RING, value)
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn set_xdp_tx_ring_size(fd: BorrowedFd<'_>, value: u32) -> io::Result<()> {
     setsockopt(fd, c::SOL_XDP, c::XDP_TX_RING, value)
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn set_xdp_rx_ring_size(fd: BorrowedFd<'_>, value: u32) -> io::Result<()> {
     setsockopt(fd, c::SOL_XDP, c::XDP_RX_RING, value)
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn xdp_mmap_offsets(fd: BorrowedFd<'_>) -> io::Result<XdpMmapOffsets> {
     // The kernel will write `xdp_mmap_offsets` or `xdp_mmap_offsets_v1` to the
@@ -1026,7 +1026,7 @@ pub(crate) fn xdp_mmap_offsets(fd: BorrowedFd<'_>) -> io::Result<XdpMmapOffsets>
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn xdp_statistics(fd: BorrowedFd<'_>) -> io::Result<XdpStatistics> {
     let mut optlen = size_of::<xdp_statistics>().try_into().unwrap();
@@ -1069,7 +1069,7 @@ pub(crate) fn xdp_statistics(fd: BorrowedFd<'_>) -> io::Result<XdpStatistics> {
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn xdp_options(fd: BorrowedFd<'_>) -> io::Result<XdpOptionsFlags> {
     getsockopt(fd, c::SOL_XDP, c::XDP_OPTIONS)

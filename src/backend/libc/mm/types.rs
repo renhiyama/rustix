@@ -260,7 +260,7 @@ bitflags! {
     }
 }
 
-#[cfg(any(target_os = "emscripten", target_os = "linux"))]
+#[cfg(any(target_os = "emscripten", any(target_os = "linux", target_os = "runixos")))]
 bitflags! {
     /// `MREMAP_*` flags for use with [`mremap`].
     ///
@@ -374,7 +374,7 @@ pub enum Advice {
     // `MADV_DONTNEED` has the same value as `POSIX_MADV_DONTNEED`. We don't
     // have a separate `posix_madvise` from `madvise`, so we expose a special
     // value which we special-case.
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "runixos"))]
     LinuxDontNeed = bitcast!(i32::MAX),
 
     /// `MADV_DONTNEED`

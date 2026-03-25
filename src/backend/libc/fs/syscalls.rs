@@ -511,7 +511,7 @@ pub(crate) fn renameat2(
     }
 }
 
-#[cfg(all(target_os = "linux", target_env = "gnu"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), target_env = "gnu"))]
 pub(crate) fn renameat2(
     old_dirfd: BorrowedFd<'_>,
     old_path: &CStr,
@@ -543,7 +543,7 @@ pub(crate) fn renameat2(
 
 #[cfg(any(
     target_os = "android",
-    all(target_os = "linux", not(target_env = "gnu")),
+    all(any(target_os = "linux", target_os = "runixos"), not(target_env = "gnu")),
 ))]
 #[inline]
 pub(crate) fn renameat2(
@@ -1898,7 +1898,7 @@ const SYS_OPENAT2: i32 = 437;
 #[cfg(all(linux_kernel, target_pointer_width = "64"))]
 const SYS_OPENAT2: i64 = 437;
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub(crate) fn sendfile(
     out_fd: BorrowedFd<'_>,
     in_fd: BorrowedFd<'_>,
