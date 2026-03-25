@@ -107,7 +107,7 @@ fn main() {
     // install the toolchain for it.
     let libc = feature_use_libc
         || cfg_use_libc
-        || (os != "linux" && os != "runixos")
+        || os != "linux"
         || !inline_asm_name_present
         || is_unsupported_abi
         || miri
@@ -117,7 +117,7 @@ fn main() {
             || arch.starts_with("mips"))
             && !rustix_use_experimental_asm);
     if libc {
-        if (os == "linux" || os == "runixos" || os == "android") && !cfg_no_linux_raw {
+        if (os == "linux" || os == "android") && !cfg_no_linux_raw {
             use_feature("linux_raw_dep");
         }
 
