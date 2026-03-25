@@ -5,7 +5,7 @@ use super::types::RawCpuSet;
 use crate::backend::c;
 #[cfg(not(any(target_os = "wasi", target_os = "fuchsia")))]
 use crate::backend::conv::borrowed_fd;
-#[cfg(any(target_os = "linux", feature = "fs"))]
+#[cfg(any(any(target_os = "linux", target_os = "runixos"), feature = "fs"))]
 use crate::backend::conv::c_str;
 #[cfg(all(feature = "alloc", feature = "fs", not(target_os = "wasi")))]
 use crate::backend::conv::ret_discarded_char_ptr;
@@ -26,9 +26,9 @@ use crate::backend::conv::ret_usize;
 use crate::backend::conv::{ret, ret_c_int};
 #[cfg(not(any(target_os = "wasi", target_os = "fuchsia")))]
 use crate::fd::BorrowedFd;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::fd::{AsRawFd, OwnedFd, RawFd};
-#[cfg(any(target_os = "linux", feature = "fs"))]
+#[cfg(any(any(target_os = "linux", target_os = "runixos"), feature = "fs"))]
 use crate::ffi::CStr;
 #[cfg(feature = "fs")]
 use crate::fs::Mode;
@@ -67,7 +67,7 @@ use crate::process::{Resource, Rlimit};
 )))]
 use crate::process::{WaitId, WaitidOptions, WaitidStatus};
 use core::mem::MaybeUninit;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use {
     super::super::conv::ret_owned_fd, crate::process::PidfdFlags, crate::process::PidfdGetfdFlags,
 };
@@ -471,9 +471,9 @@ pub(crate) fn waitid(id: WaitId<'_>, options: WaitidOptions) -> io::Result<Optio
         WaitId::All => _waitid_all(options),
         WaitId::Pid(pid) => _waitid_pid(pid, options),
         WaitId::Pgid(pgid) => _waitid_pgid(pgid, options),
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "runixos"))]
         WaitId::PidFd(fd) => _waitid_pidfd(fd, options),
-        #[cfg(not(target_os = "linux"))]
+        #[cfg(not(any(target_os = "linux", target_os = "runixos")))]
         WaitId::__EatLifetime(_) => unreachable!(),
     }
 }
@@ -550,7 +550,7 @@ fn _waitid_pgid(pgid: Option<Pid>, options: WaitidOptions) -> io::Result<Option<
     Ok(unsafe { cvt_waitid_status(status) })
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 fn _waitid_pidfd(fd: BorrowedFd<'_>, options: WaitidOptions) -> io::Result<Option<WaitidStatus>> {
     // `waitid` can return successfully without initializing the struct (no
@@ -667,7 +667,7 @@ pub(crate) unsafe fn procctl(
     ret(c::procctl(idtype, id, option, data))
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub(crate) fn pidfd_open(pid: Pid, flags: PidfdFlags) -> io::Result<OwnedFd> {
     syscall! {
         fn pidfd_open(
@@ -683,7 +683,7 @@ pub(crate) fn pidfd_open(pid: Pid, flags: PidfdFlags) -> io::Result<OwnedFd> {
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub(crate) fn pidfd_send_signal(pidfd: BorrowedFd<'_>, sig: Signal) -> io::Result<()> {
     syscall! {
         fn pidfd_send_signal(
@@ -703,7 +703,7 @@ pub(crate) fn pidfd_send_signal(pidfd: BorrowedFd<'_>, sig: Signal) -> io::Resul
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub(crate) fn pidfd_getfd(
     pidfd: BorrowedFd<'_>,
     targetfd: RawFd,
@@ -725,7 +725,7 @@ pub(crate) fn pidfd_getfd(
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub(crate) fn pivot_root(new_root: &CStr, put_old: &CStr) -> io::Result<()> {
     syscall! {
         fn pivot_root(

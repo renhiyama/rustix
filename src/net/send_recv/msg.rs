@@ -728,7 +728,7 @@ pub fn sendmsg_unix(
 ///
 /// [Linux]: https://man7.org/linux/man-pages/man2/sendmsg.2.html
 #[inline]
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub fn sendmsg_xdp(
     socket: impl AsFd,
     addr: &super::SocketAddrXdp,
@@ -779,7 +779,7 @@ pub fn sendmsg_any(
         Some(SocketAddrAny::Unix(addr)) => {
             backend::net::syscalls::sendmsg_unix(socket.as_fd(), addr, iov, control, flags)
         }
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "runixos"))]
         Some(SocketAddrAny::Xdp(addr)) => {
             backend::net::syscalls::sendmsg_xdp(socket.as_fd(), addr, iov, control, flags)
         }

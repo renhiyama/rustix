@@ -616,7 +616,7 @@ impl AddressFamily {
     #[cfg(any(apple, target_os = "emscripten", target_os = "fuchsia"))]
     pub const VSOCK: Self = Self(c::AF_VSOCK as _);
     /// `AF_XDP`
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "runixos"))]
     pub const XDP: Self = Self(c::AF_XDP as _);
 
     /// Constructs a `AddressFamily` from a raw integer.
@@ -1478,7 +1478,7 @@ bitflags! {
 }
 
 /// `AF_XDP` related types and constants.
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub mod xdp {
     use super::{bitflags, c};
 
@@ -1729,7 +1729,7 @@ pub mod xdp {
         pub options: XdpDescOptions,
     }
 
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "runixos"))]
     bitflags! {
         #[repr(transparent)]
         #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
@@ -1811,11 +1811,11 @@ fn test_sizes() {
 
     // Linux added fields to `xdp_umem_reg` so it's bigger now.
     /*
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "runixos"))]
     assert_eq_size!(super::xdp::XdpUmemReg, c::xdp_umem_reg);
     */
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "runixos"))]
     assert_eq_size!(super::xdp::XdpOptions, c::xdp_options);
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "runixos"))]
     assert_eq_size!(super::xdp::XdpDesc, c::xdp_desc);
 }

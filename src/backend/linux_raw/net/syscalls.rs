@@ -5,14 +5,14 @@
 //! See the `rustix::backend` module documentation for details.
 #![allow(unsafe_code, clippy::undocumented_unsafe_blocks)]
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use super::msghdr::with_xdp_msghdr;
 use super::msghdr::{
     with_noaddr_msghdr, with_recv_msghdr, with_unix_msghdr, with_v4_msghdr, with_v6_msghdr,
 };
 use super::read_sockaddr::{initialize_family_to_unspec, maybe_read_sockaddr_os, read_sockaddr_os};
 use super::send_recv::{RecvFlags, SendFlags};
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use super::write_sockaddr::encode_sockaddr_xdp;
 use super::write_sockaddr::{encode_sockaddr_v4, encode_sockaddr_v6};
 use crate::backend::c;
@@ -22,7 +22,7 @@ use crate::backend::conv::{
 };
 use crate::fd::{BorrowedFd, OwnedFd};
 use crate::io::{self, IoSlice, IoSliceMut};
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::net::xdp::SocketAddrXdp;
 use crate::net::{
     AddressFamily, Protocol, RecvAncillaryBuffer, RecvMsgReturn, SendAncillaryBuffer, Shutdown,
@@ -418,7 +418,7 @@ pub(crate) fn sendmsg_unix(
     })
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn sendmsg_xdp(
     sockfd: BorrowedFd<'_>,
@@ -633,7 +633,7 @@ pub(crate) fn sendto_unix(
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn sendto_xdp(
     fd: BorrowedFd<'_>,
@@ -919,7 +919,7 @@ pub(crate) fn bind_unix(fd: BorrowedFd<'_>, addr: &SocketAddrUnix) -> io::Result
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub(crate) fn bind_xdp(fd: BorrowedFd<'_>, addr: &SocketAddrXdp) -> io::Result<()> {
     #[cfg(not(target_arch = "x86"))]

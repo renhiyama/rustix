@@ -3,7 +3,7 @@
 #![allow(unsafe_code)]
 
 use crate::buffer::split_init;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::net::xdp::SocketAddrXdp;
 #[cfg(unix)]
 use crate::net::SocketAddrUnix;
@@ -290,7 +290,7 @@ fn _sendto_any(
         SocketAddrAny::V6(v6) => backend::net::syscalls::sendto_v6(fd, buf, flags, v6),
         #[cfg(unix)]
         SocketAddrAny::Unix(unix) => backend::net::syscalls::sendto_unix(fd, buf, flags, unix),
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "runixos"))]
         SocketAddrAny::Xdp(xdp) => backend::net::syscalls::sendto_xdp(fd, buf, flags, xdp),
     }
 }
@@ -417,7 +417,7 @@ pub fn sendto_unix<Fd: AsFd>(
 ///  - [Linux]
 ///
 /// [Linux]: https://man7.org/linux/man-pages/man2/sendto.2.html
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 #[doc(alias = "sendto")]
 pub fn sendto_xdp<Fd: AsFd>(

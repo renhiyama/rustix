@@ -23,7 +23,7 @@ use crate::{backend, io};
 ))]
 use {crate::ffi::CString, alloc::vec::Vec};
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::{fd::FromRawFd, ioctl};
 
 bitflags::bitflags! {
@@ -192,16 +192,16 @@ pub fn grantpt<Fd: AsFd>(fd: Fd) -> io::Result<()> {
 ///  - [Linux]
 ///
 /// [Linux]: https://man7.org/linux/man-pages/man2/ioctl_tty.2.html
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 pub fn ioctl_tiocgptpeer<Fd: AsFd>(fd: Fd, flags: OpenptFlags) -> io::Result<OwnedFd> {
     unsafe { ioctl::ioctl(fd, Tiocgptpeer(flags)) }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 struct Tiocgptpeer(OpenptFlags);
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 unsafe impl ioctl::Ioctl for Tiocgptpeer {
     type Output = OwnedFd;
 

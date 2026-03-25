@@ -4,7 +4,7 @@
 
 use crate::backend::c;
 use crate::io;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::net::xdp::{SockaddrXdpFlags, SocketAddrXdp};
 use crate::net::{Ipv4Addr, Ipv6Addr, SocketAddrAny, SocketAddrUnix, SocketAddrV4, SocketAddrV6};
 use core::mem::size_of;
@@ -114,7 +114,7 @@ pub(crate) unsafe fn read_sockaddr(
                 Ok(SocketAddrAny::Unix(SocketAddrUnix::new(bytes)?))
             }
         }
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "runixos"))]
         c::AF_XDP => {
             if len < size_of::<c::sockaddr_xdp>() {
                 return Err(io::Errno::INVAL);
@@ -205,7 +205,7 @@ pub(crate) unsafe fn read_sockaddr_os(storage: *const c::sockaddr, len: usize) -
                 SocketAddrAny::Unix(SocketAddrUnix::new(bytes).unwrap())
             }
         }
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "runixos"))]
         c::AF_XDP => {
             assert!(len >= size_of::<c::sockaddr_xdp>());
             let decode = &*storage.cast::<c::sockaddr_xdp>();

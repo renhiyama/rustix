@@ -4,7 +4,7 @@ use super::types::RawUname;
 use crate::backend::c;
 #[cfg(not(target_os = "wasi"))]
 use crate::backend::conv::ret_infallible;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::system::RebootCommand;
 use core::mem::MaybeUninit;
 #[cfg(linux_kernel)]
@@ -101,7 +101,7 @@ pub(crate) fn setdomainname(name: &[u8]) -> io::Result<()> {
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub(crate) fn reboot(cmd: RebootCommand) -> io::Result<()> {
     unsafe { ret(c::reboot(cmd as i32)) }
 }

@@ -66,15 +66,15 @@ bitflags! {
         const RESOLVE_BENEATH = bitcast!(c::AT_RESOLVE_BENEATH);
 
         /// `AT_STATX_SYNC_AS_STAT`
-        #[cfg(all(target_os = "linux", target_env = "gnu"))]
+        #[cfg(all(any(target_os = "linux", target_os = "runixos"), target_env = "gnu"))]
         const STATX_SYNC_AS_STAT = bitcast!(c::AT_STATX_SYNC_AS_STAT);
 
         /// `AT_STATX_FORCE_SYNC`
-        #[cfg(all(target_os = "linux", target_env = "gnu"))]
+        #[cfg(all(any(target_os = "linux", target_os = "runixos"), target_env = "gnu"))]
         const STATX_FORCE_SYNC = bitcast!(c::AT_STATX_FORCE_SYNC);
 
         /// `AT_STATX_DONT_SYNC`
-        #[cfg(all(target_os = "linux", target_env = "gnu"))]
+        #[cfg(all(any(target_os = "linux", target_os = "runixos"), target_env = "gnu"))]
         const STATX_DONT_SYNC = bitcast!(c::AT_STATX_DONT_SYNC);
 
         /// <https://docs.rs/bitflags/*/bitflags/#externally-defined-flags>
@@ -240,7 +240,7 @@ bitflags! {
         /// `O_FSYNC`
         #[cfg(any(
             bsd,
-            all(target_os = "linux", not(target_env = "musl")),
+            all(any(target_os = "linux", target_os = "runixos"), not(target_env = "musl")),
         ))]
         const FSYNC = bitcast!(c::O_FSYNC);
 
@@ -673,7 +673,7 @@ bitflags! {
     }
 }
 
-#[cfg(all(target_os = "linux", target_env = "gnu"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), target_env = "gnu"))]
 bitflags! {
     /// `STATX_*` constants for use with [`statx`].
     ///
@@ -736,7 +736,7 @@ bitflags! {
 
 #[cfg(any(
     target_os = "android",
-    all(target_os = "linux", not(target_env = "gnu")),
+    all(any(target_os = "linux", target_os = "runixos"), not(target_env = "gnu")),
 ))]
 bitflags! {
     /// `STATX_*` constants for use with [`statx`].
@@ -839,7 +839,7 @@ bitflags! {
             target_os = "haiku",
             target_os = "hurd",
             target_os = "l4re",
-            target_os = "linux",
+            any(target_os = "linux", target_os = "runixos"),
             target_os = "wasi",
         )))]
         const NO_HIDE_STALE = bitcast!(c::FALLOC_FL_NO_HIDE_STALE);
@@ -933,7 +933,7 @@ bitflags! {
         const RDONLY = c::ST_RDONLY as u64;
 
         /// `ST_RELATIME`
-        #[cfg(any(target_os = "android", all(target_os = "linux", target_env = "gnu")))]
+        #[cfg(any(target_os = "android", all(any(target_os = "linux", target_os = "runixos"), target_env = "gnu")))]
         const RELATIME = c::ST_RELATIME as u64;
 
         /// `ST_SYNCHRONOUS`
@@ -1094,12 +1094,12 @@ pub struct StatVfs {
 /// `struct statx` for use with [`statx`].
 ///
 /// [`statx`]: crate::fs::statx
-#[cfg(all(target_os = "linux", target_env = "gnu"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), target_env = "gnu"))]
 // Use the glibc `struct statx`.
 pub type Statx = c::statx;
 
 /// `struct statx_timestamp` for use with [`Statx`].
-#[cfg(all(target_os = "linux", target_env = "gnu"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), target_env = "gnu"))]
 // Use the glibc `struct statx_timestamp`.
 pub type StatxTimestamp = c::statx;
 
@@ -1110,7 +1110,7 @@ pub type StatxTimestamp = c::statx;
 // ourselves.
 #[cfg(any(
     target_os = "android",
-    all(target_os = "linux", not(target_env = "gnu")),
+    all(any(target_os = "linux", target_os = "runixos"), not(target_env = "gnu")),
 ))]
 #[repr(C)]
 #[allow(missing_docs)]
@@ -1145,7 +1145,7 @@ pub struct Statx {
 // declare it ourselves.
 #[cfg(any(
     target_os = "android",
-    all(target_os = "linux", not(target_env = "gnu")),
+    all(any(target_os = "linux", target_os = "runixos"), not(target_env = "gnu")),
 ))]
 #[repr(C)]
 #[allow(missing_docs)]
@@ -1173,7 +1173,7 @@ pub type Dev = c::c_ulonglong;
 
 /// `__fsword_t`
 #[cfg(all(
-    target_os = "linux",
+    any(target_os = "linux", target_os = "runixos"),
     not(target_env = "musl"),
     not(target_arch = "s390x"),
 ))]
@@ -1181,14 +1181,14 @@ pub type FsWord = c::__fsword_t;
 
 /// `__fsword_t`
 #[cfg(all(
-    any(target_os = "android", all(target_os = "linux", target_env = "musl")),
+    any(target_os = "android", all(any(target_os = "linux", target_os = "runixos"), target_env = "musl")),
     target_pointer_width = "32",
 ))]
 pub type FsWord = u32;
 
 /// `__fsword_t`
 #[cfg(all(
-    any(target_os = "android", all(target_os = "linux", target_env = "musl")),
+    any(target_os = "android", all(any(target_os = "linux", target_os = "runixos"), target_env = "musl")),
     not(target_arch = "s390x"),
     target_pointer_width = "64",
 ))]
@@ -1197,12 +1197,12 @@ pub type FsWord = u64;
 /// `__fsword_t`
 // s390x uses `u32` for `statfs` entries on glibc, even though `__fsword_t` is
 // `u64`.
-#[cfg(all(target_os = "linux", target_arch = "s390x", target_env = "gnu"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), target_arch = "s390x", target_env = "gnu"))]
 pub type FsWord = u32;
 
 /// `__fsword_t`
 // s390x uses `u64` for `statfs` entries on musl.
-#[cfg(all(target_os = "linux", target_arch = "s390x", target_env = "musl"))]
+#[cfg(all(any(target_os = "linux", target_os = "runixos"), target_arch = "s390x", target_env = "musl"))]
 pub type FsWord = u64;
 
 /// `copyfile_state_t`—State for use with [`fcopyfile`].

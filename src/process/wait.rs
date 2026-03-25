@@ -2,7 +2,7 @@ use crate::process::Pid;
 use crate::{backend, io};
 use bitflags::bitflags;
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::fd::BorrowedFd;
 
 #[cfg(linux_raw)]
@@ -270,13 +270,13 @@ pub enum WaitId<'a> {
     Pgid(Option<Pid>),
 
     /// Wait for a specific process file descriptor.
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "runixos"))]
     #[doc(alias = "P_PIDFD")]
     PidFd(BorrowedFd<'a>),
 
     /// Eat the lifetime for non-Linux platforms.
     #[doc(hidden)]
-    #[cfg(not(target_os = "linux"))]
+    #[cfg(not(any(target_os = "linux", target_os = "runixos")))]
     __EatLifetime(core::marker::PhantomData<&'a ()>),
 }
 

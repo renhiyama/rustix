@@ -3,7 +3,7 @@ use crate::net::{SocketAddr, SocketAddrAny, SocketAddrV4, SocketAddrV6};
 use crate::{backend, io};
 use backend::fd::{AsFd, BorrowedFd};
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::net::xdp::SocketAddrXdp;
 pub use crate::net::{AddressFamily, Protocol, Shutdown, SocketFlags, SocketType};
 #[cfg(unix)]
@@ -170,7 +170,7 @@ fn _bind_any(sockfd: BorrowedFd<'_>, addr: &SocketAddrAny) -> io::Result<()> {
         SocketAddrAny::V6(v6) => backend::net::syscalls::bind_v6(sockfd, v6),
         #[cfg(unix)]
         SocketAddrAny::Unix(unix) => backend::net::syscalls::bind_unix(sockfd, unix),
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "runixos"))]
         SocketAddrAny::Xdp(xdp) => backend::net::syscalls::bind_xdp(sockfd, xdp),
     }
 }
@@ -282,7 +282,7 @@ pub fn bind_unix<Fd: AsFd>(sockfd: Fd, addr: &SocketAddrUnix) -> io::Result<()> 
 ///  - [Linux]
 ///
 /// [Linux]: https://man7.org/linux/man-pages/man2/bind.2.html
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 #[inline]
 #[doc(alias = "bind")]
 pub fn bind_xdp<Fd: AsFd>(sockfd: Fd, addr: &SocketAddrXdp) -> io::Result<()> {
@@ -368,7 +368,7 @@ fn _connect_any(sockfd: BorrowedFd<'_>, addr: &SocketAddrAny) -> io::Result<()> 
         SocketAddrAny::V6(v6) => backend::net::syscalls::connect_v6(sockfd, v6),
         #[cfg(unix)]
         SocketAddrAny::Unix(unix) => backend::net::syscalls::connect_unix(sockfd, unix),
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "runixos"))]
         SocketAddrAny::Xdp(_) => Err(io::Errno::OPNOTSUPP),
     }
 }

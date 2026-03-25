@@ -8,7 +8,7 @@
 use super::types::RawUname;
 use crate::backend::c;
 use crate::backend::conv::{c_int, ret, ret_infallible, slice};
-#[cfg(any(target_os = "linux", target_os = "android"))]
+#[cfg(any(any(target_os = "linux", target_os = "runixos"), target_os = "android"))]
 use crate::fd::BorrowedFd;
 use crate::ffi::CStr;
 use crate::io;

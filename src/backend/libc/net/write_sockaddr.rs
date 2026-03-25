@@ -6,7 +6,7 @@ use super::addr::SocketAddrStorage;
 use super::addr::SocketAddrUnix;
 use super::ext::{in6_addr_new, in_addr_new, sockaddr_in6_new};
 use crate::backend::c;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::net::xdp::SocketAddrXdp;
 use crate::net::{SocketAddrAny, SocketAddrV4, SocketAddrV6};
 use core::mem::size_of;
@@ -20,7 +20,7 @@ pub(crate) unsafe fn write_sockaddr(
         SocketAddrAny::V6(v6) => write_sockaddr_v6(v6, storage),
         #[cfg(unix)]
         SocketAddrAny::Unix(unix) => write_sockaddr_unix(unix, storage),
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "runixos"))]
         SocketAddrAny::Xdp(xdp) => write_sockaddr_xdp(xdp, storage),
     }
 }
@@ -109,7 +109,7 @@ unsafe fn write_sockaddr_unix(unix: &SocketAddrUnix, storage: *mut SocketAddrSto
     unix.len()
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub(crate) fn encode_sockaddr_xdp(xdp: &SocketAddrXdp) -> c::sockaddr_xdp {
     c::sockaddr_xdp {
         sxdp_family: c::AF_XDP as _,
@@ -120,7 +120,7 @@ pub(crate) fn encode_sockaddr_xdp(xdp: &SocketAddrXdp) -> c::sockaddr_xdp {
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 unsafe fn write_sockaddr_xdp(xdp: &SocketAddrXdp, storage: *mut SocketAddrStorage) -> usize {
     let encoded = encode_sockaddr_xdp(xdp);
     core::ptr::write(storage.cast(), encoded);

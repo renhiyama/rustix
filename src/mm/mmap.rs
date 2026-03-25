@@ -14,7 +14,7 @@ use core::ffi::c_void;
 pub use backend::mm::types::MlockAllFlags;
 #[cfg(linux_kernel)]
 pub use backend::mm::types::MlockFlags;
-#[cfg(any(target_os = "emscripten", target_os = "linux"))]
+#[cfg(any(target_os = "emscripten", any(target_os = "linux", target_os = "runixos")))]
 pub use backend::mm::types::MremapFlags;
 pub use backend::mm::types::{MapFlags, MprotectFlags, ProtFlags};
 
@@ -194,7 +194,7 @@ pub unsafe fn munmap(ptr: *mut c_void, len: usize) -> io::Result<()> {
 ///  - [Linux]
 ///
 /// [Linux]: https://man7.org/linux/man-pages/man2/mremap.2.html
-#[cfg(any(target_os = "emscripten", target_os = "linux"))]
+#[cfg(any(target_os = "emscripten", any(target_os = "linux", target_os = "runixos")))]
 #[inline]
 pub unsafe fn mremap(
     old_address: *mut c_void,
@@ -228,7 +228,7 @@ pub unsafe fn mremap(
 ///  - [Linux]
 ///
 /// [Linux]: https://man7.org/linux/man-pages/man2/mremap.2.html
-#[cfg(any(target_os = "emscripten", target_os = "linux"))]
+#[cfg(any(target_os = "emscripten", any(target_os = "linux", target_os = "runixos")))]
 #[inline]
 #[doc(alias = "mremap")]
 pub unsafe fn mremap_fixed(

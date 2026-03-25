@@ -6,12 +6,12 @@
 #![allow(unsafe_code)]
 
 use crate::backend::c;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::backend::net::write_sockaddr::encode_sockaddr_xdp;
 use crate::backend::net::write_sockaddr::{encode_sockaddr_v4, encode_sockaddr_v6};
 
 use crate::io::{self, IoSlice, IoSliceMut};
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::net::xdp::SocketAddrXdp;
 use crate::net::{RecvAncillaryBuffer, SendAncillaryBuffer, SocketAddrV4, SocketAddrV6};
 use crate::utils::as_ptr;
@@ -137,7 +137,7 @@ pub(crate) fn with_unix_msghdr<R>(
 }
 
 /// Create a message header intended to send with an XDP address.
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub(crate) fn with_xdp_msghdr<R>(
     addr: &SocketAddrXdp,
     iov: &[IoSlice<'_>],

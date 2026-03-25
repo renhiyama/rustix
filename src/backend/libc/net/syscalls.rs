@@ -2,15 +2,15 @@
 
 #[cfg(unix)]
 use super::addr::SocketAddrUnix;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use super::msghdr::with_xdp_msghdr;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use super::write_sockaddr::encode_sockaddr_xdp;
 use crate::backend::c;
 use crate::backend::conv::{borrowed_fd, ret, ret_owned_fd, ret_send_recv, send_recv_len};
 use crate::fd::{BorrowedFd, OwnedFd};
 use crate::io;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::net::xdp::SocketAddrXdp;
 use crate::net::{SocketAddrAny, SocketAddrV4, SocketAddrV6};
 use crate::utils::as_ptr;
@@ -151,7 +151,7 @@ pub(crate) fn sendto_unix(
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub(crate) fn sendto_xdp(
     fd: BorrowedFd<'_>,
     buf: &[u8],
@@ -242,7 +242,7 @@ pub(crate) fn bind_unix(sockfd: BorrowedFd<'_>, addr: &SocketAddrUnix) -> io::Re
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub(crate) fn bind_xdp(sockfd: BorrowedFd<'_>, addr: &SocketAddrXdp) -> io::Result<()> {
     unsafe {
         ret(c::bind(
@@ -438,7 +438,7 @@ pub(crate) fn sendmsg_unix(
     })
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub(crate) fn sendmsg_xdp(
     sockfd: BorrowedFd<'_>,
     addr: &SocketAddrXdp,

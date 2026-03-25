@@ -13,11 +13,11 @@ mod ioctl;
 mod kill;
 #[cfg(linux_kernel)]
 mod membarrier;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 mod pidfd;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 mod pidfd_getfd;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 mod pivot_root;
 #[cfg(linux_kernel)]
 mod prctl;
@@ -55,11 +55,11 @@ pub use ioctl::*;
 pub use kill::*;
 #[cfg(linux_kernel)]
 pub use membarrier::*;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub use pidfd::*;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub use pidfd_getfd::*;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 pub use pivot_root::*;
 #[cfg(linux_kernel)]
 pub use prctl::*;

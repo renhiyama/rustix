@@ -4,7 +4,7 @@
 use super::types::Advice;
 #[cfg(any(linux_kernel, freebsdlike, netbsdlike))]
 use super::types::MlockAllFlags;
-#[cfg(any(target_os = "emscripten", target_os = "linux"))]
+#[cfg(any(target_os = "emscripten", any(target_os = "linux", target_os = "runixos")))]
 use super::types::MremapFlags;
 use super::types::{MapFlags, MprotectFlags, MsyncFlags, ProtFlags};
 #[cfg(linux_kernel)]
@@ -23,7 +23,7 @@ pub(crate) fn madvise(addr: *mut c::c_void, len: usize, advice: Advice) -> io::R
     // On Linux platforms, `MADV_DONTNEED` has the same value as
     // `POSIX_MADV_DONTNEED` but different behavior. We remap it to a different
     // value, and check for it here.
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "runixos"))]
     if let Advice::LinuxDontNeed = advice {
         return unsafe { ret(c::madvise(addr, len, c::MADV_DONTNEED)) };
     }
@@ -131,7 +131,7 @@ pub(crate) unsafe fn munmap(ptr: *mut c::c_void, len: usize) -> io::Result<()> {
 ///
 /// `mremap` is primarily unsafe due to the `old_address` parameter, as
 /// anything working with memory pointed to by raw pointers is unsafe.
-#[cfg(any(target_os = "emscripten", target_os = "linux"))]
+#[cfg(any(target_os = "emscripten", any(target_os = "linux", target_os = "runixos")))]
 pub(crate) unsafe fn mremap(
     old_address: *mut c::c_void,
     old_size: usize,
@@ -151,7 +151,7 @@ pub(crate) unsafe fn mremap(
 /// `mremap_fixed` is primarily unsafe due to the `old_address` and
 /// `new_address` parameters, as anything working with memory pointed to by raw
 /// pointers is unsafe.
-#[cfg(any(target_os = "emscripten", target_os = "linux"))]
+#[cfg(any(target_os = "emscripten", any(target_os = "linux", target_os = "runixos")))]
 pub(crate) unsafe fn mremap_fixed(
     old_address: *mut c::c_void,
     old_size: usize,

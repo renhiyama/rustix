@@ -9,7 +9,7 @@
 //! OS-specific socket address representations in memory.
 #![allow(unsafe_code)]
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "runixos"))]
 use crate::net::xdp::SocketAddrXdp;
 #[cfg(unix)]
 use crate::net::SocketAddrUnix;
@@ -33,7 +33,7 @@ pub enum SocketAddrAny {
     #[cfg(unix)]
     Unix(SocketAddrUnix),
     /// `struct sockaddr_xdp`
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "runixos"))]
     Xdp(SocketAddrXdp),
 }
 
@@ -78,7 +78,7 @@ impl SocketAddrAny {
             Self::V6(_) => AddressFamily::INET6,
             #[cfg(unix)]
             Self::Unix(_) => AddressFamily::UNIX,
-            #[cfg(target_os = "linux")]
+            #[cfg(any(target_os = "linux", target_os = "runixos"))]
             Self::Xdp(_) => AddressFamily::XDP,
         }
     }
@@ -115,7 +115,7 @@ impl fmt::Debug for SocketAddrAny {
             Self::V6(v6) => v6.fmt(f),
             #[cfg(unix)]
             Self::Unix(unix) => unix.fmt(f),
-            #[cfg(target_os = "linux")]
+            #[cfg(any(target_os = "linux", target_os = "runixos"))]
             Self::Xdp(xdp) => xdp.fmt(f),
         }
     }

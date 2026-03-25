@@ -546,7 +546,7 @@ pub unsafe fn sigtimedwait(set: &Sigset, timeout: Option<Timespec>) -> io::Resul
     linux_raw,
     any(
         all(target_os = "android", target_pointer_width = "64"),
-        target_os = "linux",
+        any(target_os = "linux", target_os = "runixos"),
     )
 ))]
 #[inline]
