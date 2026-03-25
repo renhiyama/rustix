@@ -107,7 +107,7 @@ fn main() {
     // install the toolchain for it.
     let libc = feature_use_libc
         || cfg_use_libc
-        || os != "linux"
+        || (os != "linux" && os != "runixos")
         || !inline_asm_name_present
         || is_unsupported_abi
         || miri
@@ -117,7 +117,7 @@ fn main() {
             || arch.starts_with("mips"))
             && !rustix_use_experimental_asm);
     if libc {
-        if (os == "linux" || os == "android") && !cfg_no_linux_raw {
+        if (os == "linux" || os == "runixos" || os == "android") && !cfg_no_linux_raw {
             use_feature("linux_raw_dep");
         }
 
@@ -151,7 +151,7 @@ fn main() {
     if apple {
         use_feature("apple");
     }
-    if os == "linux" || os == "l4re" || os == "android" || os == "emscripten" {
+    if os == "linux" || os == "runixos" || os == "l4re" || os == "android" || os == "emscripten" {
         use_feature("linux_like");
     }
     if os == "solaris" || os == "illumos" {
@@ -164,7 +164,7 @@ fn main() {
     // Add some additional common target combinations.
 
     // Android and "regular" Linux both use the Linux kernel.
-    if os == "android" || os == "linux" {
+    if os == "android" || os == "linux" || os == "runixos" {
         use_feature("linux_kernel");
     }
 
